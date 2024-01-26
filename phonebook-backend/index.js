@@ -89,4 +89,6 @@ function genRan1000() {
   return Math.floor(Math.random() * 1000)
 }
 
-app.listen(3001, () => console.log('Server is running on port 3001'))
+app.listen(3001, () =>  {
+  console.log('Server is running on port 3001')
+})
