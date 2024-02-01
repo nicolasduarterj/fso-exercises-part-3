@@ -41,9 +41,9 @@ app.get('/api/persons/:id', (req, res, next) => {
   }).catch(error => next(error))
 })
 
-app.delete('/api/persons/:id', (req, res) => {
+app.delete('/api/persons/:id', async (req, res) => {
   const id = req.params.id
-  Person.findByIdAndDelete(id) 
+  await Person.findByIdAndDelete(id) 
   res.status(204).end()
 })
 
