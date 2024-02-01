@@ -28,7 +28,7 @@ function App() {
           showSucc(`Added ${notaObj.name} to the phonebook`)
         }
         ).catch(error => {
-          showError("Something went wrong")
+          showError(error.response.data.error)
         })
       
     }

@@ -47,21 +47,20 @@ app.delete('/api/persons/:id', async (req, res) => {
   res.status(204).end()
 })
 
-app.post('/api/persons', (req, res, next) => {
+app.post('/api/persons', async (req, res, next) => {
   const body = req.body
-  if (!body.name || !body.number) {
-    res.statusMessage = 'missing values OR that person already exists on the database'
-    res.status(400).end()
-  }
-  else {
-    const person = new Person({
-      name: body.name,
-      number: body.number
-    })
-    person.save().then(console.log("Person saved"))
-      .catch(error => next(error))
+  const person = new Person({
+    name: body.name,
+    number: body.number
+  })
+  try {
+    await person.save()
     res.json(person)
   }
+  catch (error) {
+    next(error)
+  }
+
 })
 
 app.put('/api/persons/:id', async (req, res, next) => {
@@ -73,7 +72,7 @@ app.put('/api/persons/:id', async (req, res, next) => {
   }
   
   try {
-    const updatedPers = await Person.findByIdAndUpdate(req.params.id, newpers, {new: true})
+    const updatedPers = await Person.findByIdAndUpdate(req.params.id, newpers, {new: true, runValidators: true, context: 'query'})
     res.json(updatedPers)
   }
   catch(error) {
@@ -90,6 +89,9 @@ app.use(unknownEndpoint)
 const errorHandler = (error, req, res, next) => {
   if (error.name === 'CastError') {
     return res.status(400).send({ error: 'malformatted id' })
+  }
+  else if (error.name === 'ValidationError') {
+    return res.status(400).json({error: error.message})
   }
   next(error)
 }
